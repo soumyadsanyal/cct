@@ -40,6 +40,11 @@ max_list_helper :: Int -> [Int] -> Int
 max_list_helper f l = foldl max_ f l
     where max_ x y = if (x<y) then y else x
 
+sum_list :: (Num a) => [a] -> a
+sum_list = \l -> foldl (\acc -> \head -> acc+head) 0 l
+
+
+
 
 -- now I know there is at least one
 -- thing in the list. let's take that
