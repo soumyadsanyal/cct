@@ -52,6 +52,98 @@ eval_poly coeffs point = sum $ zipWith (*) coeffs pointpowers
 pow :: Int -> Int -> Int
 pow = \base -> \exp -> foldr (*) 1 $ take exp $ repeat base
 
+rev :: [a] -> [a]
+rev lst 
+    | null lst = []
+    | True = (rev rest) ++ h:[]
+    where
+        h:rest = lst
+
+data Tree a = Leaf a | Node a (Tree a) (Tree a)
+    deriving (Eq, Show)
+
+numleaves :: Tree a -> Int
+numleaves t = case t of
+    Leaf _ -> 1
+    Node _ left right -> 0 + (numleaves left) + (numleaves right)
+
+depth :: Tree a -> Int
+depth t = case t of 
+    Leaf _ -> 0
+    Node _ left right -> 1 + max (depth left) (depth right)
+
+t0 = Leaf 0
+t1 = Leaf 1
+t2 = Node 2 t0 t1
+t3 = Node 3 t0 t2
+
+{--
+ - choosing the fractional representation
+ - --}
+
+data Rat = Frac Int Int
+    deriving (Eq, Show)
+
+frac_sum :: Rat -> Rat -> Rat
+frac_sum f s
+    | (b /= 0) && (d /= 0) = frac_reduce $ Frac (a*d + b*c) (b*d)
+    | True = Frac 1 0
+    where
+        Frac a b = f
+        Frac c d = s
+
+frac_negative :: Rat -> Rat
+frac_negative f = frac_reduce $ Frac c b
+    where
+        Frac a b = f
+        c = -a
+
+frac_minus :: Rat -> Rat -> Rat
+frac_minus f s = frac_sum (frac_negative f) s
+
+
+frac_times :: Rat -> Rat -> Rat
+frac_times f s
+    | (b /= 0) && (d /= 0) = frac_reduce $ Frac (a*c) (b*d)
+    | True = Frac 1 0
+    where
+        Frac a b = f
+        Frac c d = s
+
+frac_divide :: Rat -> Rat -> Rat
+frac_divide f s = frac_reduce $ frac_times f $ frac_flip s
+
+frac_flip :: Rat -> Rat
+frac_flip f
+    | a==0 = Frac 1 0
+    | True = Frac b a
+    where
+        Frac a b = f
+
+frac_reduce :: Rat -> Rat
+frac_reduce (Frac a b) = if (a==0) then Frac 0 1 else Frac c d
+    where
+        g = gcd' a b
+        c = div a g
+        d = div b g
+
+gcd' :: Int -> Int -> Int
+gcd' x y = max_list $ common_divisors x y
+
+common_divisors :: Int -> Int -> [Int]
+common_divisors x y = filter (\d -> divisor d x y) [1..n]
+    where
+        n = min x y
+        divisor d a b = ((mod a d) == 0) && ((mod b d)==0)
+        
+
+f0 = Frac 0 1
+f1 = Frac 1 1
+f2 = Frac 2 1
+f3 = Frac 1 2
+f9 = Frac 1 9
+f5 = Frac 2 5
+
  
 {--reminder of what foldl does
  foldl f acc lst
