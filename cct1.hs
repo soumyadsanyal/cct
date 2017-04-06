@@ -43,31 +43,55 @@ max_list_helper f l = foldl max_ f l
 sum_list :: (Num a) => [a] -> a
 sum_list = \l -> foldl (\acc -> \head -> acc+head) 0 l
 
+eval_poly :: [Int] -> Int -> Int
+eval_poly coeffs point = sum $ zipWith (*) coeffs pointpowers
+    where
+        n = length coeffs
+        pointpowers = map (\i -> (pow point i)) [1..n]
+         
+pow :: Int -> Int -> Int
+pow = \base -> \exp -> foldr (*) 1 $ take exp $ repeat base
+
+ 
+{--reminder of what foldl does
+ foldl f acc lst
+ if null lst then acc
+ else foldl (f acc h) rest
+ where h:rest = lst
+ and the types are:
+ acc is b
+ lst is [a]
+ f is b -> a -> b
+ and return type is b
+
+ reminder of what foldr does
+ foldr f acc lst where
+ acc is b
+ lst is [a]
+ f is a -> b -> b
+ if lst is null then acc
+ else foldr f acc lst is
+ f h (foldr f acc rest)
+ where h:rest = lst
+ and acc is b, lst is [a],
+ f is a -> b -> b
+
+ best to work out an example
+
+ foldr f acc lst
+ foldr times 1 [1..5]
+ times 1 (foldr times 1 [2..5])
+ times 1 (times 2 (foldr times 1 [3..5]))
+ times 1 (times 2 (times 3 (foldr times 1 [4..5])))
+ times 1 (times 2 (times 3 (times 4 (
+   foldr times 1 [5]))))
+ times 1 (times 2 (times 3 (times 4 (times 5 (foldr times 1 [])))))
+ times 1 (times 2 (times 3 (times 4 (times 5 (1)))))
 
 
 
--- now I know there is at least one
--- thing in the list. let's take that
--- and call it f.
--- then let's run a helper function 
--- helper f l'
---
--- reminder of what foldl does
--- foldl f acc lst
--- if null lst then acc
--- else foldl (f acc h) rest
--- where h:rest = lst
--- and the types are:
--- acc is b
--- lst is [a]
--- f is b -> a -> b
--- and return type is b
---
---
---
---
--- h f l' if l' is null is just f
--- otherwise it's h (max_pair f f') l''
--- where (f', l'') = l'
---
+ h f l' if l' is null is just f
+ otherwise it's h (max_pair f f') l''
+ where (f', l'') = l'
+--}
  
