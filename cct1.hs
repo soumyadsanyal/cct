@@ -135,7 +135,17 @@ common_divisors x y = filter (\d -> divisor d x y) [1..n]
     where
         n = min x y
         divisor d a b = ((mod a d) == 0) && ((mod b d)==0)
-        
+
+delete_nth :: (Eq a) => Int -> a -> [a] -> [a]
+delete_nth n x lst
+    | null lst = lst
+    | n == 0 && f == x = rst
+    | n > 0 && f == x = f: (delete_nth (n-1) x rst)
+    | n < 0 = error "dropping negative index?"
+    | True = f:(delete_nth n x rst)
+    where
+        f:rst = lst
+
 
 f0 = Frac 0 1
 f1 = Frac 1 1
