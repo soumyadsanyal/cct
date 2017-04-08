@@ -146,6 +146,32 @@ delete_nth n x lst
     where
         f:rst = lst
 
+sublist :: [a] -> [a] -> [a]
+-- want to try this hash style
+sublist lst1 lst2 = []
+
+{--
+update a [(a,1), (b,10)]
+update a (a,1):[(b,10)]
+(a,2):[(b,10)]
+
+update a [(b,10)]
+update a (b,10):[]
+(b,10) : (update a [])
+
+update a [] = [(a,1)]
+--}
+
+update_assoc_list :: (Eq a) => a -> [(a, Int)] -> [(a, Int)]
+update_assoc_list x current
+    | null current = [(x, 1)]
+    | hkey == x = (x,hvalue+1):rst
+    | True = h : (update_assoc_list x rst)
+    where
+        h:rst = current 
+        (hkey, hvalue) = h
+
+
 
 f0 = Frac 0 1
 f1 = Frac 1 1
