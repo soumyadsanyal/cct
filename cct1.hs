@@ -146,9 +146,13 @@ delete_nth n x lst
     where
         f:rst = lst
 
-sublist :: [a] -> [a] -> [a]
+sublist :: (Eq a) => [a] -> [a] -> Bool
 -- want to try this hash style
-sublist lst1 lst2 = []
+sublist lst1 lst2 = compare_assoc_list alst1 alst2
+    where
+        alst1 = make_assoc_list lst1
+        alst2 = make_assoc_list lst2
+
 
 {--
 update a [(a,1), (b,10)]
@@ -162,7 +166,24 @@ update a (b,10):[]
 update a [] = [(a,1)]
 --}
 
-update_assoc_list :: (Eq a) => a -> [(a, Int)] -> [(a, Int)]
+type AssocList a = [(a, Int)]
+
+compare_assoc_list :: (Eq a) => AssocList a -> AssocList a -> Bool
+compare_assoc_list lst1 lst2
+    | null lst1 = True
+    | True = if check_in_assoc_list hkey hvalue lst2 then compare_assoc_list rst lst2 else False
+    where
+        h:rst = lst1
+        (hkey, hvalue) = h
+
+
+-- make both into assoc lists
+-- for each member of the first, check if the key is in the second, and if the
+-- values compare correctly. if they do, then continue, else return False
+-- immediately
+--
+
+update_assoc_list :: (Eq a) => a -> AssocList a -> AssocList a
 update_assoc_list x current
     | null current = [(x, 1)]
     | hkey == x = (x,hvalue+1):rst
@@ -171,6 +192,31 @@ update_assoc_list x current
         h:rst = current 
         (hkey, hvalue) = h
 
+
+delete_from_assoc_list :: (Eq a) => a -> AssocList a -> AssocList a
+delete_from_assoc_list x current
+    | null current = []
+    | hkey == x && hvalue > 0 = (x,hvalue-1):rst
+    | True = h : (delete_from_assoc_list x rst)
+    where
+        h:rst = current 
+        (hkey, hvalue) = h
+
+
+check_in_assoc_list :: (Eq a) => a -> Int -> AssocList a -> Bool
+check_in_assoc_list x n lst
+    | null lst = False
+    | hkey == x && hvalue >= n = True
+    | True = check_in_assoc_list x n rst
+    where
+        h:rst = lst
+        (hkey, hvalue) = h
+
+make_assoc_list :: (Eq a) => [a] -> AssocList a
+make_assoc_list s = foldl (\acc -> \c -> update_assoc_list c acc) [] s
+
+assoc0 = []
+assoc1 = make_assoc_list "SoumyaSanyal"
 
 
 f0 = Frac 0 1
