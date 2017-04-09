@@ -166,7 +166,6 @@ sublist' lst1 lst2
         (h:rst) = lst1
         forwarded = fast_forward h lst2
 
-
 fast_forward :: (Eq a) => a -> [a] -> [a]
 fast_forward x lst
     | null lst = []
@@ -174,7 +173,12 @@ fast_forward x lst
     where
         h:rst = lst
 
-
+safe_tails :: [a] -> [[a]]
+safe_tails lst
+    | null lst = []:[]
+    | True = lst: (safe_tails rst)
+    where
+        h:rst = lst
 
 
 type AssocList a = [(a, Int)]
