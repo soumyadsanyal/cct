@@ -146,6 +146,83 @@ delete_nth n x lst
     where
         f:rst = lst
 
+sublist :: (Eq a) => [a] -> [a] -> Bool
+-- want to try this hash style
+sublist lst1 lst2 = compare_assoc_list alst1 alst2
+    where
+        alst1 = make_assoc_list lst1
+        alst2 = make_assoc_list lst2
+
+-- and let's also try this in the sense the question seems to indicate...
+-- checking to see if lst2 is the same as lst2 with possibly some extra entries
+-- included in arbitrary spaces
+--
+
+sublist' :: (Eq a) => [a] -> [a] -> Bool
+sublist' lst1 lst2
+    | null lst1 = True
+    | True = if forwarded /= [] then sublist' rst forwarded else False
+    where
+        (h:rst) = lst1
+        forwarded = fast_forward h lst2
+
+fast_forward :: (Eq a) => a -> [a] -> [a]
+fast_forward x lst
+    | null lst = []
+    | True = if h==x then h:rst else fast_forward x rst
+    where
+        h:rst = lst
+
+safe_tails :: [a] -> [[a]]
+safe_tails lst
+    | null lst = []:[]
+    | True = lst: (safe_tails rst)
+    where
+        h:rst = lst
+
+
+type AssocList a = [(a, Int)]
+
+compare_assoc_list :: (Eq a) => AssocList a -> AssocList a -> Bool
+compare_assoc_list lst1 lst2
+    | null lst1 = True
+    | True = if check_in_assoc_list hkey hvalue lst2 then compare_assoc_list rst lst2 else False
+    where
+        h:rst = lst1
+        (hkey, hvalue) = h
+
+
+update_assoc_list :: (Eq a) => a -> AssocList a -> AssocList a
+update_assoc_list x current
+    | null current = [(x, 1)]
+    | hkey == x = (x,hvalue+1):rst
+    | True = h : (update_assoc_list x rst)
+    where
+        h:rst = current 
+        (hkey, hvalue) = h
+
+
+delete_from_assoc_list :: (Eq a) => a -> AssocList a -> AssocList a
+delete_from_assoc_list x current
+    | null current = []
+    | hkey == x && hvalue > 0 = (x,hvalue-1):rst
+    | True = h : (delete_from_assoc_list x rst)
+    where
+        h:rst = current 
+        (hkey, hvalue) = h
+
+
+check_in_assoc_list :: (Eq a) => a -> Int -> AssocList a -> Bool
+check_in_assoc_list x n lst
+    | null lst = False
+    | hkey == x && hvalue >= n = True
+    | True = check_in_assoc_list x n rst
+    where
+        h:rst = lst
+        (hkey, hvalue) = h
+
+make_assoc_list :: (Eq a) => [a] -> AssocList a
+make_assoc_list s = foldl (\acc -> \c -> update_assoc_list c acc) [] s
 
 f0 = Frac 0 1
 f1 = Frac 1 1
@@ -190,10 +267,5 @@ f5 = Frac 2 5
  times 1 (times 2 (times 3 (times 4 (times 5 (foldr times 1 [])))))
  times 1 (times 2 (times 3 (times 4 (times 5 (1)))))
 
-
-
- h f l' if l' is null is just f
- otherwise it's h (max_pair f f') l''
- where (f', l'') = l'
 --}
  
